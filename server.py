@@ -119,6 +119,7 @@ def login():
   if not password:
     return jsonify({'msg': 'Missing password parameter. Go back and try again'}), 400
 
+  # TODO: Proper validation
   if email != 'a@gmail.com':
       return jsonify({"msg": "Invalid email or password. Go back and try again"}), 401
 
@@ -126,14 +127,20 @@ def login():
   return redirect('/success?access_token=' + access_token), 200
 
 
-@app.route('/protected')
-def protected():
-  return 'protected'
-
-
-@app.route('/success')
+@app.route('/success', methods=['GET'])
 def success():
   return render_template('success.html')
+
+
+@app.route('/pantry', methods=['GET'])
+def pantry():
+  return render_template('pantry-blank.html')
+
+
+@app.route('/pantry-loaded', methods=['GET'])
+@jwt_required
+def pantry_loaded():
+  return '<h1>We did it!</h1>'
 
 
 if __name__ == "__main__":
