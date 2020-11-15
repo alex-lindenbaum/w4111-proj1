@@ -13,14 +13,14 @@
             <th>Food Name</th>
             <th>Amount</th>
             <th>Date Bought</th>
-            <th>Shelf Life</th>
+            <th>Expiration</th>
         </tr>
         {% for item in cursor %}
         <tr>
             <td>item['food_name']</td>
             <td>item['amount']</td>
             <td>item['date_bought']</td>
-            <td>item['shelf_life']</td>
+            <td>item['expiration']</td>
         </tr>
 	    {% endfor %}
     </table>

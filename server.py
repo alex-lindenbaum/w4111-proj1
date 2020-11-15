@@ -140,7 +140,10 @@ def pantry():
 @app.route('/pantry-loaded', methods=['GET'])
 @jwt_required
 def pantry_loaded():
-  return '<h1>We did it!</h1>'
+  email = get_jwt_identity()
+  
+  cursor = g.conn.execute('SELECT food_name, amount, date_bought, expiration FROM storage_details WHERE email = %s', email)
+  return render_template('pantry.html', cursor=cursor)
 
 
 if __name__ == "__main__":
