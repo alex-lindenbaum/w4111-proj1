@@ -141,7 +141,7 @@ def login():
 
   return render_template('login.html')
 
-"""
+
 @app.before_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -153,13 +153,13 @@ def load_logged_in_user():
         g.user = g.conn.execute(
             'SELECT * FROM users WHERE email = %s', user_id
         ).fetchone()
-"""
+
 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('login'))
 
         return view(**kwargs)
 
@@ -192,7 +192,7 @@ def additem():
     amount = request.form['amount']
     unit = request.form['unit']
     date_bought = request.form['date_bought']
-    email = get_jwt_identity()
+    email = g.user['email']
     error = None
     try:
       g.conn.execute('INSERT INTO storage_details(email, amount, unit, date_bought, food_name) \
@@ -203,8 +203,6 @@ def additem():
       return redirect(url_for('additem'))
     
     flash(error)
-  
-  render_template('additem.html')
 
   cursor = g.conn.execute('SELECT food_name FROM food_items')
   return render_template('additem.html', cursor=cursor)
