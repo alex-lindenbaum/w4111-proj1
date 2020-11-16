@@ -129,6 +129,9 @@ def login():
 
 @app.route('/success', methods=['GET'])
 def success():
+  """
+  Intermediate route: success.html writes access_token to localStorage, then redirects.
+  """
   return render_template('success.html')
 
 
