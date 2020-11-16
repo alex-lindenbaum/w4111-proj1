@@ -143,6 +143,10 @@ def login():
 def success():
   return render_template('success.html')
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+  return render_template('dashboard.html')
+
 
 @app.route('/pantry', methods=['GET'])
 def pantry():
@@ -156,6 +160,36 @@ def pantry_loaded():
   
   cursor = g.conn.execute('SELECT food_name, amount, date_bought, shelf_life FROM storage_details NATURAL JOIN food_items WHERE email = %s', email)
   return render_template('pantry.html', cursor=cursor)
+
+
+@app.route('/additem', methods=['GET'])
+def additem():
+  return render_template('additem-blank.html')
+
+@app.route('/additem-loaded', methods=['GET', 'POST'])
+@jwt_required
+def additem_loaded():
+  if request.method == 'POST':
+    food_name = request.form['food_name']
+    amount = request.form['amount']
+    unit = request.form['unit']
+    date_bought = request.form['date_bought']
+    email = get_jwt_identity()
+    error = None
+    try:
+      g.conn.execute('INSERT INTO storage_details(email, amount, unit, date_bought, food_name) \
+        VALUES (%s, %d, %s, %s, %s)', email, amount, unit, date_bought, food_name)
+    except:
+      error = "Entry failed"
+    if error is None:
+      return redirect(url_for('additem'))
+    
+    flash(error)
+  
+  render_template('additem.html')
+
+  cursor = g.conn.execute('SELECT food_name FROM food_items')
+  return render_template('additem.html', cursor=cursor)
 
 if __name__ == "__main__":
   import click

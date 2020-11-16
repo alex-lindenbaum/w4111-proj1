@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Dashboard{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li><a href="{{ url_for('pantry') }}">Pantry</a>
+        <li><a href="{{ url_for('additem') }}">Add Pantry Item</a>
+    </ul>
+{% endblock %}
