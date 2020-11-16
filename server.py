@@ -10,10 +10,10 @@ Read about it online.
 """
 import os
   # accessible as a variable in index.html:
+import functools
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, jsonify, url_for, flash
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, url_for, flash, session
 from hashlib import sha256
 from werkzeug.security import safe_str_cmp
 
@@ -25,10 +25,6 @@ app.config.from_mapping(
 DATABASEURI = "postgresql://al4008:0475@34.75.150.200/proj1part2"
 
 engine = create_engine(DATABASEURI)
-
-# JWT/Authentication stuff
-app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this!
-jwt = JWTManager(app)
 
 
 @app.before_request
@@ -94,8 +90,9 @@ def signup():
       error = 'User already exists'
 
     if error is None:
-      access_token = create_access_token(identity=email)
-      return redirect('http://localhost:8111/success?access_token=' + access_token), 200
+      session.clear()
+      session['user_id'] = user['email']
+      return redirect(url_for('dashboard'))
     flash(error)
 
   return render_template('signup.html')
@@ -118,60 +115,78 @@ def login():
     error = None
 
     if not email:
-      error = 'Missing email parameter. Try again.'
-    """
-    if not password:
+      error = 'Missing email parameter. Try again.'  
+    """ 
+    elif not password:
       error = 'Missing password parameter. Try again.'
-    
-    user = g.conn.execute('SELECT * FROM users WHERE email = %s', email).fetchone()
-    if user is None:
-        error ='Invalid email'
-    #TODO: not sure if this is correct way to check password?
-    hashedpwd = sha256(password.encode('utf-8')).hexdigest()
-    if hashedpwd != user['hashed_pwd']:
-      error = 'Invalid password'
+    else:
+      user = g.conn.execute('SELECT * FROM users WHERE email = %s', email).fetchone()
+      if user is None:
+          error ='Invalid email'
+      #TODO: not sure if this is correct way to check password?
+      else:
+        hashedpwd = sha256(password.encode('utf-8')).hexdigest()
+        if safe_str_cmp(hashedpwd, user['hashed_pwd']):
+          error = 'Invalid password'
     """
+      
     if error is None:
-      access_token = create_access_token(identity=email)
-      return redirect('/success?access_token=' + access_token), 200
+      session.clear()
+      session['user_id'] = email
+      #TODO: change to this later
+      #session['user_id'] = user['email']
+      return redirect(url_for('dashboard'))
 
     flash(error)
 
   return render_template('login.html')
 
-@app.route('/success', methods=['GET'])
-def success():
-  """
-  Intermediate route: success.html writes access_token to localStorage, then redirects.
-  """
-  return render_template('success.html')
+"""
+@app.before_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+    print(user_id)
+
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = g.conn.execute(
+            'SELECT * FROM users WHERE email = %s', user_id
+        ).fetchone()
+"""
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
 
 @app.route('/dashboard', methods=['GET'])
+@login_required
 def dashboard():
   return render_template('dashboard.html')
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
 
 @app.route('/pantry', methods=['GET'])
+@login_required
 def pantry():
-  return render_template('pantry-blank.html')
-
-
-@app.route('/pantry-loaded', methods=['GET'])
-@jwt_required
-def pantry_loaded():
-  email = get_jwt_identity()
-  
-  cursor = g.conn.execute('SELECT food_name, amount, date_bought, shelf_life FROM storage_details NATURAL JOIN food_items WHERE email = %s', email)
+  email = g.user['email']
+  cursor = g.conn.execute('SELECT food_name, amount, date_bought, shelf_life FROM storage_details \
+    NATURAL JOIN food_items WHERE email = %s', email)
   return render_template('pantry.html', cursor=cursor)
 
-
-@app.route('/additem', methods=['GET'])
+@app.route('/additem', methods=['GET', 'POST'])
+@login_required
 def additem():
-  return render_template('additem-blank.html')
-
-@app.route('/additem-loaded', methods=['GET', 'POST'])
-@jwt_required
-def additem_loaded():
   if request.method == 'POST':
     food_name = request.form['food_name']
     amount = request.form['amount']
