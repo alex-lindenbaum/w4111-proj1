@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Recipes{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <h3>Some text here!</h3>
+
+    <h3>Liked recipes:</h3>
+    {% for recipe in liked_recipes %}
+        <div>
+            <p>{{recipe['recipe_name']}}</p><br>
+
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}"><br>
+
+            <a href="{{recipe['url']}}"></a><br>
+
+            <form action="/recipes/dislike/{{recipe['recipe_name']}}" method="post">
+                <input type="submit" value="submit" name="Dislike">
+            </form><br>
+        </div>
+    {% endfor %}
+
+    <h3>New recipes:</h3>
+    {% for recipe in other_recipes %}
+        <div>
+            <p>{{recipe['recipe_name']}}</p><br>
+
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}"><br>
+
+            <a href="{{recipe['url']}}"></a><br><br>
+
+            <form action="/recipes/like/{{recipe['recipe_name']}}" method="post">
+                <input type="submit" value="submit" name="Like">
+            </form><br>
+            <form action="/recipes/dislike/{{recipe['recipe_name']}}" method="post">
+                <input type="submit" value="submit" name="Dislike">
+            </form><br>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Your Shopping List{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <p><i>Computed from your liked recipes</i></p>
+    <h3>Shopping List:</h3>
+    <ul>
+        {% for item in cursor %}
+            <li>{{item[0]}}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
