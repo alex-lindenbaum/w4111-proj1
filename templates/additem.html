@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Add Pantry Item{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form action="/additem-loaded" method="post">
+    <label for="food_name">Food name:</label>
+    <input list="food_names" name="food_name" id="food_name">
+    <datalist id="food_names">
+        {% for item in cursor %}
+        <option>{{item[0]}}</option>
+        {% endfor %}
+    </datalist><br><br>
+    <label for="amount">Amount:</label>
+    <input type="number" name="amount" id="amount"><br><br>
+    <label for="unit">Unit:</label>
+    <input type="text" name="amount" id="amount"><br><br>
+    <label for="date_bought">Date Bought:</label>
+    <input type="date" name="date_bought" id="date_bought"><br><br>
+    <input type="submit">
+  </form>
+{% endblock %}
