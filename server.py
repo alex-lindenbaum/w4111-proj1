@@ -154,7 +154,7 @@ def pantry():
 def pantry_loaded():
   email = get_jwt_identity()
   
-  cursor = g.conn.execute('SELECT storage_details.food_name, amount, date_bought, shelf_life FROM storage_details, food_items WHERE email = %s', email)
+  cursor = g.conn.execute('SELECT food_name, amount, date_bought, shelf_life FROM storage_details NATURAL JOIN food_items WHERE email = %s', email)
   return render_template('pantry.html', cursor=cursor)
 
 if __name__ == "__main__":
