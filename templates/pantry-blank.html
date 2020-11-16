@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantry</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Log In{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
     <script>
         fetch('/pantry-loaded', {
             method: 'GET',
@@ -22,5 +21,4 @@
     </script>
 
     <div id="page"></div>
-</body>
-</html>
+{% endblock %}

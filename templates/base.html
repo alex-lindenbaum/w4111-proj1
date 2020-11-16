@@ -1,0 +1,28 @@
+<!doctype html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Pantry Pal</title>
+</head>
+
+<nav>
+  <h1>Pantry Pal</h1>
+  <ul>
+    {% if g.user %} 
+      <li><span>{{ g.user['username'] }}</span>
+      <li><a href="{{ url_for('logout') }}">Log Out</a>
+    {% else %}
+      <li><a href="{{ url_for('signup') }}">Sign Up</a>
+      <li><a href="{{ url_for('login') }}">Log In</a>
+    {% endif %}
+  </ul>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>

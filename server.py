@@ -12,13 +12,15 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, jsonify, url_for
+from flask import Flask, request, render_template, g, redirect, Response, jsonify, url_for, flash
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from hashlib import sha256
 from werkzeug.security import safe_str_cmp
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
+app.config.from_mapping(
+        SECRET_KEY='dev')
 
 DATABASEURI = "postgresql://al4008:0475@34.75.150.200/proj1part2"
 
@@ -75,26 +77,28 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-  if request.method == 'GET':
-    return render_template('signup.html')
+  if request.method == 'POST':
+    email = request.form['email']
+    password = request.form['password']
+    error = None
 
-  email = request.form['email']
-  password = request.form['password']
+    if not email:
+      error = 'Missing email parameter. Try again.'
+    if not password:
+      error = 'Missing password parameter. Try again.'
 
-  if not email:
-    return jsonify({'msg': 'Missing email parameter. Go back and try again'}), 400
-  if not password:
-    return jsonify({'msg': 'Missing password parameter. Go back and try again'}), 400
+    hashedPassword = sha256(password.encode('utf-8')).hexdigest()
+    try:
+      g.conn.execute('INSERT INTO users(email, hashed_pwd) VALUES (%s, %s)', email, hashedPassword)
+    except:
+      error = 'User already exists'
 
-  hashedPassword = sha256(password.encode('utf-8')).hexdigest()
-  try:
-    g.conn.execute('INSERT INTO users(email, hashed_pwd) VALUES (%s, %s)', email, hashedPassword)
-  except:
-    return jsonify({'msg': 'Failed to create new account'})
+    if error is None:
+      access_token = create_access_token(identity=email)
+      return redirect('http://localhost:8111/success?access_token=' + access_token), 200
+    flash(error)
 
-  access_token = create_access_token(identity=email)
-  return redirect('http://localhost:8111/success?access_token=' + access_token), 200
-
+  return render_template('signup.html')
 
 @app.route('/debug')
 def debug():
@@ -108,24 +112,32 @@ def debug():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  if request.method == 'GET':
-    return render_template('login.html')
+  if request.method == 'POST':
+    email = request.form['email']
+    password = request.form['password']
+    error = None
 
-  email = request.form['email']
-  password = request.form['password']
+    if not email:
+      error = 'Missing email parameter. Try again.'
+    """
+    if not password:
+      error = 'Missing password parameter. Try again.'
+    
+    user = g.conn.execute('SELECT * FROM users WHERE email = %s', email).fetchone()
+    if user is None:
+        error ='Invalid email'
+    #TODO: not sure if this is correct way to check password?
+    hashedpwd = sha256(password.encode('utf-8')).hexdigest()
+    if hashedpwd != user['hashed_pwd']:
+      error = 'Invalid password'
+    """
+    if error is None:
+      access_token = create_access_token(identity=email)
+      return redirect('/success?access_token=' + access_token), 200
 
-  if not email:
-    return jsonify({'msg': 'Missing email parameter. Go back and try again'}), 400
-  if not password:
-    return jsonify({'msg': 'Missing password parameter. Go back and try again'}), 400
+    flash(error)
 
-  # TODO: Proper validation
-  if email != 'a@gmail.com':
-      return jsonify({"msg": "Invalid email or password. Go back and try again"}), 401
-
-  access_token = create_access_token(identity=email)
-  return redirect('/success?access_token=' + access_token), 200
-
+  return render_template('login.html')
 
 @app.route('/success', methods=['GET'])
 def success():
@@ -142,9 +154,8 @@ def pantry():
 def pantry_loaded():
   email = get_jwt_identity()
   
-  cursor = g.conn.execute('SELECT food_name, amount, date_bought, expiration FROM storage_details WHERE email = %s', email)
+  cursor = g.conn.execute('SELECT storage_details.food_name, amount, date_bought, shelf_life FROM storage_details, food_items WHERE email = %s', email)
   return render_template('pantry.html', cursor=cursor)
-
 
 if __name__ == "__main__":
   import click
