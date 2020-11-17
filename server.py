@@ -237,14 +237,12 @@ def recipes():
   
   return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
 
-<<<<<<< HEAD
 @app.route('/recipes/dislike/<path:url>', method = ['POST'])
 @login_required
 def dislike_recipe(url):
   g.conn.execute('INSERT INTO has_impression(email, url, liked) VALUES (%s, %s, false)', g.user['email'], url)
   return redirect(url_for('recipes'))
 
-=======
 
 @app.route('/recipes/like/<path:url>', methods=['POST'])
 @login_required
@@ -262,7 +260,6 @@ def unlike_recipe(url):
   return redirect(url_for('recipes'))
 
 
->>>>>>> 4778e058f6c1dc1e93422951a84f8c951269083c
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
 def restrictions():
