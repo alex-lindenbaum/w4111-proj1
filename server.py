@@ -68,7 +68,7 @@ def index():
   See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
   """
 
-  return 'root'
+  return render_template('index.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -96,15 +96,6 @@ def signup():
     flash(error)
 
   return render_template('signup.html')
-
-@app.route('/debug')
-def debug():
-  site = ''
-  cursor = g.conn.execute('SELECT * FROM users')
-  for res in cursor:
-    site += res['email'] + ', ' + res['hashed_pwd'] + '\r\n'
-
-  return site
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -209,6 +200,37 @@ def additem():
 
   cursor = g.conn.execute('SELECT food_name FROM food_items')
   return render_template('additem.html', cursor=cursor)
+
+@app.route('/restrictions', methods=['GET', 'POST'])
+@login_required
+def restrictions():
+  email = g.user['email']
+
+  if request.method == 'POST':
+    diet_name = request.form['diet_name']
+
+    error = None
+    try:
+      g.conn.execute('INSERT INTO has_restriction(email, diet_name) VALUES (%s, %s, %s, %s, %s)', email, diet_name)
+    except:
+      error = "Entry failed"
+    if error is None:
+      flash("Restriction added!")
+      return redirect(url_for('restriction'))
+    
+    flash(error)
+
+  restrictions_list = g.conn.execute('SELECT * FROM dietary_restrictions')
+  user_restrictions = g.conn.execute('SELECT diet_name FROM has_restriction WHERE email = %s', email)
+  return render_template('restrictions.html', restrictions_list=restrictions_list, user_restrictions=user_restrictions)
+
+@app.route('/shoppinglist', methods=['GET', 'POST'])
+@login_required
+def shoppinglist():
+  email = g.user['email']
+  cursor = g.conn.execute('SELECT DISTINCT food_name FROM has_impression NATURAL JOIN in_recipe \
+    WHERE email = %s AND liked', email)
+  return render_template('shoppinglist.html', cursor=cursor)
 
 if __name__ == "__main__":
   import click
