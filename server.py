@@ -237,6 +237,23 @@ def recipes():
   
   return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
 
+
+@app.route('/recipes/like/<path:url>', methods=['POST'])
+@login_required
+def like_recipe(url):
+  g.conn.execute('INSERT INTO has_impression (email, url, liked) VALUES (%s, %s, true)', g.user['email'], url)
+
+  return redirect(url_for('recipes'))
+
+
+@app.route('/recipes/unlike/<path:url>', methods=['POST'])
+@login_required
+def unlike_recipe(url):
+  g.conn.execute('DELETE FROM has_impression WHERE email = %s AND url = %s', g.user['email'], url)
+
+  return redirect(url_for('recipes'))
+
+
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
 def restrictions():
