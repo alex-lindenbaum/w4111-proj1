@@ -14,8 +14,8 @@
 
             <a href="{{recipe['url']}}"></a><br>
 
-            <form action="/recipes/dislike/{{recipe['recipe_name']}}" method="post">
-                <input type="submit" value="Dislike" name="dislike">
+            <form action="/recipes/unlike/{{recipe['url']}}" method="post">
+                <input type="submit" value="Unlike" name="unlike">
             </form><br>
         </div>
     {% endfor %}
@@ -29,10 +29,10 @@
 
             <a href="{{recipe['url']}}"></a><br><br>
 
-            <form action="/recipes/like/{{recipe['recipe_name']}}" method="post">
+            <form action="/recipes/like/{{recipe['url']}}" method="post">
                 <input type="submit" value="Like" name="like">
             </form><br>
-            <form action="/recipes/dislike/{{recipe['recipe_name']}}" method="post">
+            <form action="/recipes/dislike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Dislike" name="dislike">
             </form><br>
         </div>
@@ -47,10 +47,10 @@
 
             <a href="{{recipe['url']}}"></a><br><br>
 
-            <form action="/recipes/like/{{recipe['recipe_name']}}" method="post">
+            <form action="/recipes/like/{{recipe['url']}}" method="post">
                 <input type="submit" value="Like" name="like">
             </form><br>
-            <form action="/recipes/dislike/{{recipe['recipe_name']}}" method="post">
+            <form action="/recipes/dislike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Dislike" name="dislike">
             </form><br>
         </div>
