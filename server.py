@@ -204,11 +204,11 @@ def updateitem(storage_id):
     date_bought = request.form['date_bought']
 
     error = None
-    try:
-      g.conn.execute('UPDATE storage_details SET food_name = %s, amount = %s, unit = %s, date_bought = %s \
-        WHERE storage_id = %s', food_name, amount, unit, date_bought, storage_id)
-    except:
-      error = "Entry failed"
+    #try:
+    g.conn.execute('UPDATE storage_details SET food_name = %s, amount = %s, unit = %s, date_bought = %s \
+      WHERE storage_id = %s', food_name, amount, unit, date_bought, storage_id)
+    # except:
+    #   error = "Entry failed"
     if error is None:
       flash("Item updated!")
       return redirect(url_for('pantry'))
@@ -216,8 +216,8 @@ def updateitem(storage_id):
     flash(error)
 
   cursor = g.conn.execute('SELECT food_name FROM food_items')
-  item = g.conn.execute('SELECT storage_id, email, amount, unit, date_bought \
-    FROM storage_details WHERE storage_id = %s', storage_id)
+  item = g.conn.execute('SELECT storage_id, food_name, amount, unit, date_bought \
+    FROM storage_details WHERE storage_id = %s', storage_id).fetchone()
   return render_template('updateitem.html', cursor=cursor, item=item)
 
 
