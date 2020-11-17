@@ -135,8 +135,7 @@ def login():
 
 @app.before_request
 def load_logged_in_user():
-    #user_id = session.get('user_id') TODO: change back
-    user_id = 'a@gmail.com'
+    user_id = session.get('user_id')
 
     if user_id is None:
         g.user = None
