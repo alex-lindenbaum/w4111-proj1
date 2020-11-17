@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Add Dietary Restriction{% endblock %}</h1>
+  <h1>{% block title %}Dietary Restrictions{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<form action="/TODO" method="post">
+<h3>Your Dietary Restrictions</h3>
+<ul>
+  {% for item in user_restrictions %}
+  <li>{{item[0]}}</li>
+  {% endfor %}
+</ul>
+
+<h3>Add Dietary Restrictions</h3>
+<form action="/restrictions" method="post">
     <label for="diet_name">Dietary Restriction:</label>
     <input list="diet_names" name="diet_name" id="diet_name">
     <datalist id="diet_names">
-        {% for item in cursor %}
+        {% for item in restrictions_list %}
         <option>{{item[0]}}</option>
         {% endfor %}
     </datalist><br><br>
