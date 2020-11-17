@@ -199,6 +199,38 @@ def additem():
   cursor = g.conn.execute('SELECT food_name FROM food_items')
   return render_template('additem.html', cursor=cursor)
 
+@app.route('/pantry/update/<int:storage_id>', methods=['GET', 'POST'])
+@login_required
+def updateitem(storage_id):
+  if request.method == 'POST':
+    food_name = request.form['food_name']
+    amount = request.form['amount']
+    unit = request.form['unit']
+    date_bought = request.form['date_bought']
+
+    error = None
+    try:
+      g.conn.execute('UPDATE storage_details SET food_name = %s, amount = %s, unit = %s, date_bought = %s \
+        WHERE storage_id = %s', food_name, amount, unit, date_bought, storage_id)
+    except:
+      error = "Entry failed"
+    if error is None:
+      flash("Item updated!")
+      return redirect(url_for('pantry'))
+    
+    flash(error)
+
+  cursor = g.conn.execute('SELECT food_name FROM food_items')
+  item = g.conn.execute('SELECT storage_id, email, amount, unit, date_bought \
+    FROM storage_details WHERE storage_id = %s', storage_id)
+  return render_template('updateitem.html', cursor=cursor, item=item)
+
+
+@app.route('/pantry/delete/<int:storage_id>', methods=['GET'])
+@login_required
+def deleteitem(storage_id):
+  g.conn.execute('DELETE FROM storage_details WHERE storage_id = %s', storage_id)
+  return redirect(url_for('pantry'))
 
 @app.route('/recipes', methods=['GET'])
 @login_required
@@ -237,14 +269,12 @@ def recipes():
   
   return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
 
-<<<<<<< HEAD
-@app.route('/recipes/dislike/<path:url>', method = ['POST'])
+@app.route('/recipes/dislike/<path:url>', methods=['POST'])
 @login_required
 def dislike_recipe(url):
   g.conn.execute('INSERT INTO has_impression(email, url, liked) VALUES (%s, %s, false)', g.user['email'], url)
   return redirect(url_for('recipes'))
 
-=======
 
 @app.route('/recipes/like/<path:url>', methods=['POST'])
 @login_required
@@ -262,7 +292,6 @@ def unlike_recipe(url):
   return redirect(url_for('recipes'))
 
 
->>>>>>> 4778e058f6c1dc1e93422951a84f8c951269083c
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
 def restrictions():
