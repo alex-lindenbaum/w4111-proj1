@@ -68,7 +68,7 @@ def index():
   See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
   """
 
-  return 'root'
+  return render_template('index.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -96,15 +96,6 @@ def signup():
     flash(error)
 
   return render_template('signup.html')
-
-@app.route('/debug')
-def debug():
-  site = ''
-  cursor = g.conn.execute('SELECT * FROM users')
-  for res in cursor:
-    site += res['email'] + ', ' + res['hashed_pwd'] + '\r\n'
-
-  return site
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -146,7 +137,6 @@ def login():
 def load_logged_in_user():
     #user_id = session.get('user_id') TODO: change back
     user_id = 'a@gmail.com'
-    print(user_id)
 
     if user_id is None:
         g.user = None
@@ -208,6 +198,45 @@ def additem():
 
   cursor = g.conn.execute('SELECT food_name FROM food_items')
   return render_template('additem.html', cursor=cursor)
+
+
+@app.route('/recipes', methods=['GET'])
+@login_required
+def recipes():
+  email = g.user['email']
+
+  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+    FROM recipes R NATURAL JOIN has_impression H \
+    WHERE H.email = %s AND H.liked', email)
+
+  liked_recipes = list()
+  for recipe in cursor:
+    liked_recipes.append(recipe)
+
+  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+    FROM recipes R \
+    WHERE (SELECT COUNT(*) FROM in_recipe IR NATURAL JOIN storage_details SD \
+                    WHERE SD.email = %s) > 1 \
+    UNION \
+    SELECT R2.recipe_name, R2.photo_url, R2.url \
+    FROM recipes R2 \
+      WHERE NOT EXISTS (SELECT * FROM has_impression H \
+                WHERE H.url = R2.url AND H.email = %s)', email, email)
+
+  other_recipes = list()
+  for recipe in cursor:
+    other_recipes.append(recipe)
+
+  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+    FROM recipes R, has_restriction HR, fulfills_restriction FR \
+    WHERE HR.email = %s AND FR.url = R.url AND HR.diet_name = FR.diet_name', email)
+
+  diet_recipes = list()
+  for recipe in cursor:
+    diet_recipes.append(recipe)
+  
+  return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
+
 
 if __name__ == "__main__":
   import click
