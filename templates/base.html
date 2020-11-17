@@ -3,10 +3,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - Pantry Pal</title>
+    <style>
+      a { text-decoration: none;}
+    </style>
 </head>
 
 <nav>
-  <h1>Pantry Pal</h1>
+  <a href="/"><h1>Pantry Pal</h1></a>
   <ul>
     {% if g.user %} 
       <li><span>{{ g.user['email'] }}</span>

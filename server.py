@@ -91,7 +91,7 @@ def signup():
 
     if error is None:
       session.clear()
-      session['user_id'] = user['email']
+      session['user_id'] = email
       return redirect(url_for('dashboard'))
     flash(error)
 
@@ -106,26 +106,21 @@ def login():
     error = None
 
     if not email:
-      error = 'Missing email parameter. Try again.'  
-    """ 
+      error = 'Missing email parameter. Try again.'
     elif not password:
       error = 'Missing password parameter. Try again.'
     else:
       user = g.conn.execute('SELECT * FROM users WHERE email = %s', email).fetchone()
       if user is None:
           error ='Invalid email'
-      #TODO: not sure if this is correct way to check password?
       else:
         hashedpwd = sha256(password.encode('utf-8')).hexdigest()
-        if safe_str_cmp(hashedpwd, user['hashed_pwd']):
+        if not safe_str_cmp(hashedpwd, user['hashed_pwd']):
           error = 'Invalid password'
-    """
       
     if error is None:
       session.clear()
       session['user_id'] = email
-      #TODO: change to this later
-      #session['user_id'] = user['email']
       return redirect(url_for('dashboard'))
 
     flash(error)
