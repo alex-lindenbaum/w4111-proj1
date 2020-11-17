@@ -170,7 +170,7 @@ def logout():
 @login_required
 def pantry():
   email = g.user['email']
-  cursor = g.conn.execute('SELECT food_name, amount, date_bought, shelf_life FROM storage_details \
+  cursor = g.conn.execute('SELECT storage_id, food_name, amount, date_bought, shelf_life FROM storage_details \
     NATURAL JOIN food_items WHERE email = %s', email)
   return render_template('pantry.html', cursor=cursor)
 
@@ -236,6 +236,12 @@ def recipes():
     diet_recipes.append(recipe)
   
   return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
+
+@app.route('/recipes/dislike/<path:url>', method = ['POST'])
+@login_required
+def dislike_recipe(url):
+  g.conn.execute('INSERT INTO has_impression(email, url, liked) VALUES (%s, %s, false)', g.user['email'], url)
+  return redirect(url_for('recipes'))
 
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
