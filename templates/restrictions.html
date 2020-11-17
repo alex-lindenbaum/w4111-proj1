@@ -6,11 +6,15 @@
 
 {% block content %}
 <h3>Your Dietary Restrictions</h3>
-<ul>
+<table>
   {% for item in user_restrictions %}
-  <li>{{item[0]}}</li>
+  <tr>
+    <td>{{item[0]}}</td>
+    <td><form action="/restrictions/delete/{{item[0]}}" method="post">
+      <input type="submit" value="Delete" name="delete"></form></td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
 
 <h3>Add Dietary Restrictions</h3>
 <form action="/restrictions" method="post">

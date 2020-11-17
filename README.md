@@ -9,8 +9,10 @@ What we changed from our initial design was the layout of the site in general. O
 
 Database operations:
 1. /recipes
-When the browser GETS /recipes, among other queries, a query is submitted to Postgres server to retrieve the recipes that (1) the user is missing at most two ingredients for, and (2) the user has not liked or disliked the recipe. Multiple query results are combined to populate the /recipes page with liked recipes, new recipes, and recipes that fulfill the user's dietary restrictions.
+When the browser GETS /recipes, among other queries, a query is submitted to Postgres server to retrieve the recipes that (1) the user has at least two ingredients for, and (2) the user has not liked or disliked the recipe. Multiple query results are combined to populate the /recipes page with liked recipes, new recipes that the user has ingredients for, and all recipes that fulfill the user's dietary restrictions.
 
 POST /recipes/like, /recipes/dislike, or /recipes/unlike creates or deletes an impression a user has for the specific recipe.
 
 The interesting part of GET /recipes is that to get the new recipes, the SQL UNION operator is utilized, which is somewhat uncommon but fits perfectly for the application.
+
+2. 

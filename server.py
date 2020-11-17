@@ -221,7 +221,7 @@ def updateitem(storage_id):
   return render_template('updateitem.html', cursor=cursor, item=item)
 
 
-@app.route('/pantry/delete/<int:storage_id>', methods=['GET'])
+@app.route('/pantry/delete/<int:storage_id>', methods=['POST'])
 @login_required
 def deleteitem(storage_id):
   g.conn.execute('DELETE FROM storage_details WHERE storage_id = %s', storage_id)
@@ -297,18 +297,24 @@ def restrictions():
 
     error = None
     try:
-      g.conn.execute('INSERT INTO has_restriction(email, diet_name) VALUES (%s, %s, %s, %s, %s)', email, diet_name)
+      g.conn.execute('INSERT INTO has_restriction(email, diet_name) VALUES (%s, %s)', email, diet_name)
     except:
       error = "Entry failed"
     if error is None:
       flash("Restriction added!")
-      return redirect(url_for('restriction'))
+      return redirect(url_for('restrictions'))
     
     flash(error)
 
   restrictions_list = g.conn.execute('SELECT * FROM dietary_restrictions')
   user_restrictions = g.conn.execute('SELECT diet_name FROM has_restriction WHERE email = %s', email)
   return render_template('restrictions.html', restrictions_list=restrictions_list, user_restrictions=user_restrictions)
+
+@app.route('/restrictions/delete/<diet_name>', methods=['POST'])
+@login_required
+def deleterestriction(diet_name):
+  g.conn.execute('DELETE FROM has_restriction WHERE email = %s AND diet_name = %s', g.user['email'], diet_name)
+  return redirect(url_for('restrictions'))
 
 @app.route('/shoppinglist', methods=['GET', 'POST'])
 @login_required

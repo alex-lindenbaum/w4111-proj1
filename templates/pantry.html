@@ -23,7 +23,7 @@
             <td>{{item[4]}}</td>
             <td><form action="/pantry/update/{{item[0]}}" method="get">
                 <input type="submit" value="Update" name="update"></form></td>
-            <td><form action="/pantry/delete/{{item[0]}}" method="get">
+            <td><form action="/pantry/delete/{{item[0]}}" method="post">
                 <input type="submit" value="Delete" name="delete"></form></td>
         </tr>
 	    {% endfor %}
