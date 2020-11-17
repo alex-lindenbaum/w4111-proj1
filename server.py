@@ -202,6 +202,7 @@ def additem():
     except:
       error = "Entry failed"
     if error is None:
+      flash("Item added!")
       return redirect(url_for('additem'))
     
     flash(error)
