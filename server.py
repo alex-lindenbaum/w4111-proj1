@@ -144,7 +144,8 @@ def login():
 
 @app.before_request
 def load_logged_in_user():
-    user_id = session.get('user_id')
+    #user_id = session.get('user_id') TODO: change back
+    user_id = 'a@gmail.com'
     print(user_id)
 
     if user_id is None:
@@ -159,7 +160,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('login'))
 
         return view(**kwargs)
 
@@ -192,11 +193,12 @@ def additem():
     amount = request.form['amount']
     unit = request.form['unit']
     date_bought = request.form['date_bought']
-    email = session.get('user_id')
+    email = g.user['email']
+
     error = None
     try:
       g.conn.execute('INSERT INTO storage_details(email, amount, unit, date_bought, food_name) \
-        VALUES (%s, %d, %s, %s, %s)', email, amount, unit, date_bought, food_name)
+        VALUES (%s, %s, %s, %s, %s)', email, amount, unit, date_bought, food_name)
     except:
       error = "Entry failed"
     if error is None:
