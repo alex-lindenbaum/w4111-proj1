@@ -166,7 +166,7 @@ def logout():
 @login_required
 def pantry():
   email = g.user['email']
-  cursor = g.conn.execute('SELECT storage_id, food_name, amount, date_bought, shelf_life FROM storage_details \
+  cursor = g.conn.execute('SELECT storage_id, food_name, amount, unit, date_bought, shelf_life FROM storage_details \
     NATURAL JOIN food_items WHERE email = %s', email)
   today = date.today()
   return render_template('pantry.html', cursor=cursor, today=today, timedelta=timedelta)
