@@ -9,6 +9,7 @@ What we changed from our initial design was the layout of the site in general. O
 
 Schema modifications:
 We also improved our schema from part 2. We added check constraints to check that shelf_life is >= 0 in food_items, and to check that amount is > 0 in storage_details.
+NOTE: Because we did not initially hash our passwords when entering data in part 2, that data became inaccessible in our web app. Thus, we deleted that data and entered new data for demonstration purposes.
 
 Database operations:
 1. /recipes
