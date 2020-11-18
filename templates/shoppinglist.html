@@ -5,10 +5,9 @@
 {% endblock %}
 
 {% block content %}
-<p><i>Computed from your liked recipes</i></p>
 <h3>Shopping List:</h3>
 <ul>
-    {% for item in shipping_list %}
+    {% for item in shopping_list %}
         <li>{{item[0]}}</li>
     {% endfor %}
 </ul>
@@ -17,10 +16,6 @@
 {% for recipe in shopping_recipes %}
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
-
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
-
-            <a href="{{recipe['url']}}"></a><br><br>
 
             <form action="/shoppinglist/delete/{{recipe['url']}}" method="post">
                 <input type="submit" value="Delete" name="delete">
