@@ -15,4 +15,5 @@ POST /recipes/like, /recipes/dislike, or /recipes/unlike creates or deletes an i
 
 The interesting part of GET /recipes is that to get the new recipes, the SQL UNION operator is utilized, which is somewhat uncommon but fits perfectly for the application.
 
-2. 
+2. /shoppinglist
+When the browser GETS /shoppinglist, it generates the list of food items which are in the recipes that the user liked. To perform this query, we natural-joined the has_impression and in_recipe relations to get tuples for the recipes in has_impression with each of their ingredients. We then selected those that were liked by the user, and then projected onto food_names
