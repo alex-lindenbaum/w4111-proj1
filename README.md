@@ -7,6 +7,9 @@ We implemented a general user interface for observing the pantry and recieving r
 
 What we changed from our initial design was the layout of the site in general. Originally, the idea was for the user to observe their pantry first, and then be taken to the recommended recipes. Rather, we decided to implement a more horizontal layout, where the pantry and recipes pages are at the same level in the site tree
 
+Schema modifications:
+We also improved our schema from part 2. We added check constraints to check that shelf_life is >= 0 in food_items, and to check that amount is > 0 in storage_details.
+
 Database operations:
 1. /recipes
 When the browser GETS /recipes, among other queries, a query is submitted to Postgres server to retrieve the recipes that (1) the user has at least two ingredients for, and (2) the user has not liked or disliked the recipe. Multiple query results are combined to populate the /recipes page with liked recipes, new recipes that the user has ingredients for, and all recipes that fulfill the user's dietary restrictions.
