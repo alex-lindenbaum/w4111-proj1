@@ -14,7 +14,7 @@
         {% endfor %}
     </datalist><br><br>
     <label for="amount">Amount:</label>
-    <input type="number" name="amount" id="amount" value="{{item[2]}}"><br><br>
+    <input type="number" name="amount" step="0.01" min="0" id="amount" value="{{item[2]}}"><br><br>
     <label for="unit">Unit:</label>
     <input type="text" name="unit" id="unit" value={{item[3]}}><br><br>
     <label for="date_bought">Date Bought:</label>

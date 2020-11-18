@@ -182,17 +182,14 @@ def additem():
     email = g.user['email']
 
     error = None
-    if int(amount) <= 0:
-      error = "Please enter an amount greater than zero."
-    else:
-      try:
-        g.conn.execute('INSERT INTO storage_details(email, amount, unit, date_bought, food_name) \
-          VALUES (%s, %s, %s, %s, %s)', email, amount, unit, date_bought, food_name)
-      except:
-        error = "Entry failed"
-      if error is None:
-        flash("Item added!")
-        return redirect(url_for('additem'))
+    try:
+      g.conn.execute('INSERT INTO storage_details(email, amount, unit, date_bought, food_name) \
+        VALUES (%s, %s, %s, %s, %s)', email, amount, unit, date_bought, food_name)
+    except:
+      error = "Entry failed"
+    if error is None:
+      flash("Item added!")
+      return redirect(url_for('additem'))
 
     flash(error)
 
@@ -208,18 +205,15 @@ def updateitem(storage_id):
     unit = request.form['unit']
     date_bought = request.form['date_bought']
 
-    error = None
-    if int(amount) <= 0:
-      error = "Please enter an amount greater than zero."
-    else:
-      try:
-        g.conn.execute('UPDATE storage_details SET food_name = %s, amount = %s, unit = %s, date_bought = %s \
-          WHERE storage_id = %s', food_name, amount, unit, date_bought, storage_id)
-      except:
-        error = "Entry failed"
-      if error is None:
-        flash("Item updated!")
-        return redirect(url_for('pantry'))
+    error=None
+    try:
+      g.conn.execute('UPDATE storage_details SET food_name = %s, amount = %s, unit = %s, date_bought = %s \
+        WHERE storage_id = %s', food_name, amount, unit, date_bought, storage_id)
+    except:
+      error = "Entry failed"
+    if error is None:
+      flash("Item updated!")
+      return redirect(url_for('pantry'))
     
     flash(error)
 
