@@ -17,10 +17,6 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
-
-            <a href="{{recipe['url']}}"></a><br><br>
-
             <form action="/shoppinglist/delete/{{recipe['url']}}" method="post">
                 <input type="submit" value="Delete" name="delete">
             </form><br>

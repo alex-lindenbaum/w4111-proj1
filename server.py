@@ -320,13 +320,14 @@ def deleterestriction(diet_name):
 def shoppinglist():
   email = g.user['email']
 
-  shopping_recipes = g.conn.execute('SELECT R.recipe_name \
+  shopping_recipes = g.conn.execute('SELECT R.url, R.recipe_name \
     FROM recipes R NATURAL JOIN add_to_shopping_list S \
     WHERE S.email = %s', email)
 
   shopping_list = g.conn.execute('SELECT DISTINCT IR.food_name \
     FROM in_recipe IR NATURAL JOIN add_to_shopping_list S \
-    WHERE S.email = %s MINUS \
+    WHERE S.email = %s \
+    EXCEPT \
     SELECT DISTINCT SD.food_name FROM storage_details SD \
     WHERE SD.email = %s', email, email)
 
