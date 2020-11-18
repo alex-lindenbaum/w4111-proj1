@@ -5,5 +5,24 @@
 {% endblock %}
 
 {% block content %}
+{% for recipe in cursor %}
+        <div>
+            <b><p>{{recipe['recipe_name']}}</p></b><br>
 
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
+
+            <a href="{{recipe['url']}}"></a><br><br>
+
+            <form action="/recipes/like/{{recipe['url']}}" method="post">
+                <input type="submit" value="Like" name="like">
+            </form><br>
+            <form action="/recipes/dislike/{{recipe['url']}}" method="post">
+                <input type="submit" value="Dislike" name="dislike">
+            </form><br>
+
+            <form action="/shoppinglist/add/{{recipe['url']}}" method="post">
+                <input type="submit" value="Add to Shopping List" name="addtoshoppinglist">
+            </form><br>
+        </div>
+    {% endfor %}
 {% endblock %}

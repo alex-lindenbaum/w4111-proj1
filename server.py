@@ -283,8 +283,9 @@ def unlike_recipe(url):
 #TODO: add popular recipes
 @app.route('/popularrecipes')
 def popularrecipes():
-  cursor = g.conn.execute('SELECT TOP 10 DISTINCT url, recipe_name, photo_url FROM recipes R \
-    ORDER BY (SELECT COUNT(*) FROM has_impression HI WHERE HI.url=R.url AND liked) DESC')
+  cursor = g.conn.execute('SELECT url, recipe_name, photo_url FROM recipes R \
+    ORDER BY (SELECT COUNT(*) FROM has_impression HI WHERE HI.url=R.url AND liked) DESC LIMIT 10')
+  return render_template('popularrecipes.html', cursor=cursor)
 
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
