@@ -280,10 +280,10 @@ def unlike_recipe(url):
 
   return redirect(url_for('recipes'))
 
-# #TODO: add popular recipes
-# @app.route('/popularrecipes')
-# def popularrecipes():
-#   cursor = g.conn.execute('SELECT recipe_name, photo_url, DISTINCT url FROM has_impression NATURAL JOIN recipes')
+#TODO: add popular recipes
+@app.route('/popularrecipes')
+def popularrecipes():
+  cursor = g.conn.execute('SELECT recipe_name, photo_url, DISTINCT url FROM has_impression NATURAL JOIN recipes')
 
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
@@ -325,7 +325,9 @@ def shoppinglist():
 
   shopping_list = g.conn.execute('SELECT DISTINCT IR.food_name \
     FROM in_recipe IR NATURAL JOIN add_to_shopping_list S \
-    WHERE S.email = %s', email)
+    WHERE S.email = %s MINUS \
+    SELECT DISTINCT SD.food_name FROM storage_details SD \
+    WHERE SD.email = %s', email, email)
 
   return render_template('shoppinglist.html', shopping_recipes=shopping_recipes, shopping_list=shopping_list)
 
