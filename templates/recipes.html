@@ -17,6 +17,10 @@
             <form action="/recipes/unlike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Unlike" name="unlike">
             </form><br>
+
+            <form action="/shoppinglist/add/{{recipe['url']}}" method="post">
+                <input type="submit" value="Add to Shopping List" name="addtoshoppinglist">
+            </form><br>
         </div>
     {% endfor %}
 
@@ -35,6 +39,10 @@
             <form action="/recipes/dislike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Dislike" name="dislike">
             </form><br>
+
+            <form action="/shoppinglist/add/{{recipe['url']}}" method="post">
+                <input type="submit" value="Add to Shopping List" name="addtoshoppinglist">
+            </form><br>
         </div>
     {% endfor %}
 
@@ -52,6 +60,10 @@
             </form><br>
             <form action="/recipes/dislike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Dislike" name="dislike">
+            </form><br>
+
+            <form action="/shoppinglist/add/{{recipe['url']}}" method="post">
+                <input type="submit" value="Add to Shopping List" name="addtoshoppinglist">
             </form><br>
         </div>
     {% endfor %}
