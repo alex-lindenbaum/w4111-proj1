@@ -16,6 +16,7 @@ from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, jsonify, url_for, flash, session
 from hashlib import sha256
 from werkzeug.security import safe_str_cmp
+from datetime import date, timedelta
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -167,7 +168,8 @@ def pantry():
   email = g.user['email']
   cursor = g.conn.execute('SELECT storage_id, food_name, amount, date_bought, shelf_life FROM storage_details \
     NATURAL JOIN food_items WHERE email = %s', email)
-  return render_template('pantry.html', cursor=cursor)
+  today = date.today()
+  return render_template('pantry.html', cursor=cursor, today=today, timedelta=timedelta)
 
 @app.route('/additem', methods=['GET', 'POST'])
 @login_required

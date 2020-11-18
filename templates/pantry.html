@@ -13,14 +13,20 @@
             <th>Food Name</th>
             <th>Amount</th>
             <th>Date Bought</th>
-            <th>Shelf Life</th>
+            <th>Expiration Date</th>
+            <th>Days Left</th>
         </tr>
         {% for item in cursor %}
         <tr>
             <td>{{item[1]}}</td>
             <td>{{item[2]}}</td>
             <td>{{item[3]}}</td>
-            <td>{{item[4]}}</td>
+            <td>{% if item[4] %}
+                {{item[3] + timedelta(days=item[4])}}
+                {% endif %}</td>
+            <td>{% if item[4] %}
+                {{(item[3] + timedelta(days=item[4]) - today).days}}
+                {% endif %}</td>
             <td><form action="/pantry/update/{{item[0]}}" method="get">
                 <input type="submit" value="Update" name="update"></form></td>
             <td><form action="/pantry/delete/{{item[0]}}" method="post">
