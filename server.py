@@ -318,13 +318,36 @@ def deleterestriction(diet_name):
   g.conn.execute('DELETE FROM has_restriction WHERE email = %s AND diet_name = %s', g.user['email'], diet_name)
   return redirect(url_for('restrictions'))
 
-@app.route('/shoppinglist', methods=['GET', 'POST'])
+@app.route('/shoppinglist', methods=['GET'])
 @login_required
 def shoppinglist():
   email = g.user['email']
-  cursor = g.conn.execute('SELECT DISTINCT food_name FROM has_impression NATURAL JOIN in_recipe \
-    WHERE email = %s AND liked', email)
-  return render_template('shoppinglist.html', cursor=cursor)
+
+  shopping_recipes = g.conn.execute('SELECT R.recipe_name \
+    FROM recipes R NATURAL JOIN add_to_shopping_list S \
+    WHERE S.email = %s', email)
+
+  shopping_list = g.conn.execute('SELECT DISTINCT IR.food_name \
+    FROM in_recipe IR NATURAL JOIN add_to_shopping_list S \
+    WHERE S.email = %s', email)
+
+  return render_template('shoppinglist.html', shopping_recipes=shopping_recipes, shopping_list=shopping_list)
+
+
+@app.route('/shoppinglist/add/<path:url>', methods=['POST'])
+@login_required
+def add_to_shoppinglist(url):
+  email = g.user['email']
+  error = None
+  try:
+    g.conn.execute('INSERT INTO add_to_shopping_list(email, url) VALUES (%s, %s)', email, url)
+  except:
+    error = 'Item already in your shopping list.'
+
+  if not error == None:
+    flash(error)
+
+  return redirect(url_for('recipes'))
 
 if __name__ == "__main__":
   import click
