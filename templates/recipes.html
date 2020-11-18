@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Recipes{% endblock %}</h1>
+  <h1>{% block title %}Recipes for you{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="600"><br>
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
 
             <a href="{{recipe['url']}}"></a><br>
 
@@ -20,12 +20,12 @@
         </div>
     {% endfor %}
 
-    <h3>New recipes:</h3>
+    <h3>New recipes you can make:</h3>
     {% for recipe in other_recipes %}
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="600"><br>
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
 
             <a href="{{recipe['url']}}"></a><br><br>
 
@@ -43,7 +43,7 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="600"><br>
+            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
 
             <a href="{{recipe['url']}}"></a><br><br>
 

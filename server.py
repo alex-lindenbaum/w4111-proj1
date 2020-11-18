@@ -234,35 +234,27 @@ def deleteitem(storage_id):
 def recipes():
   email = g.user['email']
 
-  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+  liked_recipes = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
     FROM recipes R NATURAL JOIN has_impression H \
     WHERE H.email = %s AND H.liked', email)
 
-  liked_recipes = list()
-  for recipe in cursor:
-    liked_recipes.append(recipe)
-
-  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+  other_recipes =  g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
     FROM recipes R \
-    WHERE (SELECT COUNT(*) FROM in_recipe IR NATURAL JOIN storage_details SD \
-                    WHERE SD.email = %s) > 1 \
-    UNION \
+    WHERE (SELECT COUNT(DISTINCT IR.food_name) FROM in_recipe IR INNER JOIN storage_details SD ON IR.food_name=SD.food_name \
+                    WHERE SD.email = %s AND IR.url = R.url) > 1 \
+    INTERSECT \
     SELECT R2.recipe_name, R2.photo_url, R2.url \
     FROM recipes R2 \
       WHERE NOT EXISTS (SELECT * FROM has_impression H \
                 WHERE H.url = R2.url AND H.email = %s)', email, email)
 
-  other_recipes = list()
-  for recipe in cursor:
-    other_recipes.append(recipe)
-
-  cursor = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
-    FROM recipes R, has_restriction HR, fulfills_restriction FR \
-    WHERE HR.email = %s AND FR.url = R.url AND HR.diet_name = FR.diet_name', email)
-
-  diet_recipes = list()
-  for recipe in cursor:
-    diet_recipes.append(recipe)
+  #shows all if user has no restrictions
+  if g.conn.execute('SELECT * FROM has_restriction WHERE email=%s', email).fetchone() == None:
+    diet_recipes = g.conn.execute('SELECT recipe_name, photo_url, url FROM recipes')
+  else:
+    diet_recipes = g.conn.execute('SELECT R.recipe_name, R.photo_url, R.url \
+      FROM recipes R, has_restriction HR, fulfills_restriction FR \
+      WHERE HR.email = %s AND FR.url = R.url AND HR.diet_name = FR.diet_name', email)
   
   return render_template('recipes.html', liked_recipes=liked_recipes, other_recipes=other_recipes, diet_recipes=diet_recipes)
 
@@ -288,6 +280,10 @@ def unlike_recipe(url):
 
   return redirect(url_for('recipes'))
 
+# #TODO: add popular recipes
+# @app.route('/popularrecipes')
+# def popularrecipes():
+#   cursor = g.conn.execute('SELECT recipe_name, photo_url, DISTINCT url FROM has_impression NATURAL JOIN recipes')
 
 @app.route('/restrictions', methods=['GET', 'POST'])
 @login_required
@@ -318,13 +314,19 @@ def deleterestriction(diet_name):
   g.conn.execute('DELETE FROM has_restriction WHERE email = %s AND diet_name = %s', g.user['email'], diet_name)
   return redirect(url_for('restrictions'))
 
-@app.route('/shoppinglist', methods=['GET', 'POST'])
+@app.route('/shoppinglist', methods=['GET'])
 @login_required
 def shoppinglist():
   email = g.user['email']
   cursor = g.conn.execute('SELECT DISTINCT food_name FROM has_impression NATURAL JOIN in_recipe \
     WHERE email = %s AND liked', email)
   return render_template('shoppinglist.html', cursor=cursor)
+
+@app.route('/restrictions/delete/<path:url>', methods=['POST'])
+@login_required
+def delete_from_shoppinglist(url):
+  g.conn.execute('DELETE FROM add_to_shopping_list WHERE email = %s AND url = %s', g.user['email'], url)
+  return redirect(url_for('shoppinglist'))
 
 if __name__ == "__main__":
   import click
