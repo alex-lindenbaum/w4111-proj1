@@ -5,10 +5,9 @@
 {% endblock %}
 
 {% block content %}
-<p><i>Computed from your liked recipes</i></p>
 <h3>Shopping List:</h3>
 <ul>
-    {% for item in shipping_list %}
+    {% for item in shopping_list %}
         <li>{{item[0]}}</li>
     {% endfor %}
 </ul>
