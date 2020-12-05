@@ -10,9 +10,7 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
-
-            <a href="{{recipe['url']}}"></a><br>
+            <a href="{{recipe['url']}}"><img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"></a><br>
 
             <form action="/recipes/unlike/{{recipe['url']}}" method="post">
                 <input type="submit" value="Unlike" name="unlike">
@@ -29,9 +27,7 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
-
-            <a href="{{recipe['url']}}"></a><br><br>
+            <a href="{{recipe['url']}}"><img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"></a><br>
 
             <form action="/recipes/like/{{recipe['url']}}" method="post">
                 <input type="submit" value="Like" name="like">
@@ -51,9 +47,7 @@
         <div>
             <b><p>{{recipe['recipe_name']}}</p></b><br>
 
-            <img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"><br>
-
-            <a href="{{recipe['url']}}"></a><br><br>
+            <a href="{{recipe['url']}}"><img src="{{recipe['photo_url']}}" alt="{{recipe['recipe_name']}}" width="400"></a><br>
 
             <form action="/recipes/like/{{recipe['url']}}" method="post">
                 <input type="submit" value="Like" name="like">

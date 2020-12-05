@@ -15,7 +15,7 @@
 <h3>Recipes in Shopping List:</h3>
 {% for recipe in shopping_recipes %}
         <div>
-            <b><p>{{recipe['recipe_name']}}</p></b><br>
+            <a href="{{recipe['url']}}"><b><p>{{recipe['recipe_name']}}</p></a></b><br>
 
             <form action="/shoppinglist/delete/{{recipe['url']}}" method="post">
                 <input type="submit" value="Delete" name="delete">
