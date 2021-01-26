@@ -23,7 +23,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 app.config.from_mapping(
         SECRET_KEY='dev')
 
-DATABASEURI = "postgresql://al4008:0475@34.75.150.200/proj1part2"
+DATABASEURI = "database-uri"
 
 engine = create_engine(DATABASEURI)
 
